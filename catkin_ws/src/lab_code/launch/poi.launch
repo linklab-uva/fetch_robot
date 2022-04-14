@@ -1,0 +1,7 @@
+<launch>
+	<!-- <node name="rviz" pkg="rviz" type="rviz" args="-d /home/utkarsh/catkin_ws/src/fetch_navigation/config/navigation.rviz"/>
+	-->
+	<node name="play_sound" pkg="lab_code" type="play_sound.py" output="screen" />
+    <node name="lab_navigation" pkg="lab_code" type="navigate.py" output="screen" />
+    <node name="set_initial_pose" pkg="lab_code" type="set_initial_pose.py" output="screen" />
+</launch>
