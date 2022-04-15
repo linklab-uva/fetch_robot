@@ -4,21 +4,28 @@ import rospy
 from sensor_msgs.msg import Image
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
-from time import time
+import apriltag
+
+
+detector = apriltag.Detector()
+bridge = CvBridge()
 
 
 def save_image(data):
+	global bridge, detector
 	print('Received Image')
 	try:
-		cv2_img = CvBridge().imgmsg_to_cv2(data, 'rgb8')
-		cv2.imwrite('/home/utkarsh/images/' + str(time()) + '.jpeg', cv2_img)
-		print('Saved Image')
+		cv2_img = bridge.imgmsg_to_cv2(data, "mono8")
 	except CvBridgeError, e:
 		print(e)
+		return
+
+	result = detector.detect(cv2_img)
+	print(result)
 
 
 def main():
-	rospy.init_node('save_image', anonymous=True)
+	rospy.init_node('april_tag', anonymous=True)
 	rospy.Subscriber('/head_camera/rgb/image_raw', Image, save_image)
 
 	rospy.spin()
