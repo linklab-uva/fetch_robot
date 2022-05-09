@@ -2,6 +2,8 @@
 
 import rospy
 from sensor_msgs.msg import Image
+from control_msgs.msg import FollowJointTrajectoryActionGoal
+from trajectory_msgs.msg import JointTrajectoryPoint
 from cv_bridge import CvBridge, CvBridgeError
 import cv2
 import apriltag
@@ -24,9 +26,14 @@ def save_image(data):
 		print(e)
 		return
 
-	result = detector.detect(gray)[0]
-	val = True
-	print(result)
+	li = detector.detect(gray)
+	if li != []:
+		result = li[0]
+		val = True
+		print(result)
+	else:
+		val = False
+		print('No April Tag Detected')
 
 
 def main():
@@ -36,6 +43,7 @@ def main():
 	image_pub = rospy.Publisher('/april_tag', Image, queue_size=1)
 
 	rate = rospy.Rate(10)
+	position = 0
 
 	while not rospy.is_shutdown():
 		if val:
@@ -60,12 +68,6 @@ def main():
 				cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 			
 			image_pub.publish(bridge.cv2_to_imgmsg(image))
-
-			print(image.shape)
-			print(cY)
-
-			image_cY = image.shape[0] // 2
-			print(cY == image_cY)
 
 		rate.sleep()
 
